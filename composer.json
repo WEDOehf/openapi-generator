@@ -1,0 +1,58 @@
+{
+  "name": "wedo/openapi-generator",
+  "license": "MIT",
+  "type": "library",
+  "description": "Open api json generator from typed classes",
+  "keywords": ["swagger", "openapi", "api", "documentation", "generator"],
+  "authors": [
+    {
+      "name": "Dalibor Korpar"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Wedo\\OpenApiGenerator\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Wedo\\OpenApiGenerator\\Tests\\": "tests/"
+    }
+  },
+  "require": {
+    "php": "^7.1",
+    "nette/utils": "^2.4|^3.0",
+    "nette/reflection": "^2.4",
+    "nette/schema": "^v1.0"
+  },
+  "require-dev": {
+    "ninjify/qa": "^0.10",
+    "phpunit/phpunit": "^7.0|^8.0"
+  },
+  "scripts": {
+    "qa": [
+      "codesniffer src tests",
+      "linter src tests"
+    ],
+    "codefixer": [
+      "codefixer"
+    ],
+    "tests": [
+      "phpunit --configuration tests/phpunit.xml tests/"
+    ],
+    "coverage": [
+      "phpunit --configuration tests/phpunit.xml tests --coverage-clover=coverage.xml"
+    ],
+    "phpstan-install": [
+      "mkdir -p temp/phpstan",
+      "composer require -d temp/phpstan phpstan/phpstan:^0.11",
+      "composer require -d temp/phpstan phpstan/phpstan-dibi:^0.11",
+      "composer require -d temp/phpstan phpstan/phpstan-deprecation-rules:^0.11",
+      "composer require -d temp/phpstan phpstan/phpstan-nette:^0.11",
+      "composer require -d temp/phpstan phpstan/phpstan-strict-rules:^0.11"
+    ],
+    "phpstan": [
+      "temp/phpstan/vendor/bin/phpstan analyse -l max -c phpstan.neon src --memory-limit 1024M"
+    ]
+  }
+}
