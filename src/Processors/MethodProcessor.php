@@ -83,7 +83,7 @@ class MethodProcessor
 	 */
 	protected function getRequestMethod(array $annotations, array $methodParams): string
 	{
-		$requestMethod = !isset($annotations['httpMethod']) ? 'get' : strtolower($annotations['method'][0]);
+		$requestMethod = !isset($annotations['httpMethod']) ? 'get' : strtolower($annotations['httpMethod'][0]);
 		if (isset($methodParams[0]) && ($methodParams[0]->getType() !== null)) {
 			$type = $methodParams[0]->getType()->getName();
 			if (class_exists($type) && ClassType::from($type)->is($this->generator->getConfig()->baseRequest)) {

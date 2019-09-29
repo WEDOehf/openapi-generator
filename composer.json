@@ -22,8 +22,7 @@
   "require": {
     "php": "^7.1",
     "nette/utils": "^2.4|^3.0",
-    "nette/reflection": "^2.4",
-    "nette/schema": "^v1.0"
+    "nette/reflection": "^2.4"
   },
   "require-dev": {
     "ninjify/qa": "^0.10",

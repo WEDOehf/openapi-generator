@@ -20,6 +20,7 @@ class GeneratorTest extends TestCase
 		$generator = new Generator($config);
 		$json = $generator->generate();
 		$this->assertJson($json);
+		file_put_contents(__DIR__ . '/out.json', $json);
 	}
 
 }

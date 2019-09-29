@@ -9,7 +9,8 @@ class ProductController extends BaseController
 {
 
 	/**
-	 * @param int $notRequiredParam
+	 * @param int $id
+	 * @param bool $extra
 	 */
 	public function get(int $id): ProductResponse
 	{
