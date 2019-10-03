@@ -60,4 +60,8 @@ class ClassProcessor
 		}
 	}
 
+	public function getMethodProcessor(): MethodProcessor
+	{
+		return $this->methodProcessor;
+	}
 }

@@ -81,6 +81,11 @@ class Generator
 		return $this->refProcessor;
 	}
 
+	public function getClassProcessor(): ClassProcessor
+	{
+		return $this->classProcessor;
+	}
+
 	public function getConfig(): Config
 	{
 		return $this->config;
