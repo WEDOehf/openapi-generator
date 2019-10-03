@@ -11,6 +11,7 @@ use Wedo\OpenApiGenerator\Exceptions\InvalidReturnTypeDefinitionException;
 use Wedo\OpenApiGenerator\Generator;
 use Wedo\OpenApiGenerator\Helper;
 use Wedo\OpenApiGenerator\OpenApiDefinition\Path;
+use Wedo\OpenApiGenerator\OpenApiDefinition\Response;
 
 class MethodProcessor
 {
@@ -23,9 +24,6 @@ class MethodProcessor
 	/** @var ParameterProcessor */
 	private $parameterProcessor;
 
-	/** @var ResponseProcessor */
-	private $responseProcessor;
-
 	/** @var callable */
 	public $onProcess;
 
@@ -33,7 +31,6 @@ class MethodProcessor
 	{
 		$this->generator = $generator;
 		$this->parameterProcessor = new ParameterProcessor($generator);
-		$this->responseProcessor = new ResponseProcessor($generator);
 	}
 
 	/**
@@ -56,7 +53,7 @@ class MethodProcessor
 			throw new InvalidReturnTypeDefinitionException('Return type not set on method ' . $method->getName());
 		}
 
-		$path->responses = $this->responseProcessor->generateResponses($method->getReturnType());
+		$path->responses = $this->generateResponses($method->getReturnType());
 		$this->onProcess($method, $path);
 		$methodParams = $method->getParameters();
 
@@ -92,6 +89,33 @@ class MethodProcessor
 		}
 
 		return $requestMethod;
+	}
+
+	/**
+	 * @return Response[]
+	 */
+	public function generateResponses(\ReflectionType $returnType): array
+	{
+		$returnType = ClassType::from($returnType->getName());
+		$this->generator->getRefProcessor()->generateRef($returnType);
+		$responses = [];
+		$responses[200] = $this->createResponse('Success response', $returnType->shortName);
+		return $responses;
+	}
+
+
+	public function createResponse(string $description, string $type): Response
+	{
+		$response = new Response();
+		$response->description = $description;
+		$response->content = [
+			'application/json' => [
+				'schema' => [
+					'$ref' => '#/components/schemas/' . $type,
+				],
+			],
+		];
+		return $response;
 	}
 
 }
