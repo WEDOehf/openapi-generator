@@ -34,6 +34,8 @@ class Config
 	/** @var string */
 	public $baseEnum = 'App\Enums\BaseEnum';
 
+	public $dateTimeClass = 'App\Common\JsonDateTime';
+
 	/**
 	 * annotation that show some property is required on request
 	 *

@@ -56,7 +56,7 @@ class Generator
 			}
 		}
 
-		$json = Json::encode($this->json, Json::PRETTY);
+		$json = json_encode($this->json, JSON_PRETTY_PRINT);
 		$json = preg_replace('/,\s*"[^"]+":null|"[^"]+":null,?/', '', $json);
 		return $json ?? '';
 	}

@@ -171,7 +171,7 @@ class ReferenceProcessor
 
 	protected function extractObjectProperty(string $propertyType, ArrayHash $jsonProperty, int $arrayDimensions = 0): ArrayHash
 	{
-		if ($propertyType === 'App\Common\JsonDateTime') {
+		if ($propertyType === $this->generator->getConfig()->dateTimeClass) {
 			$jsonProperty->type = 'string';
 			$jsonProperty->format = 'date-time';
 			return $jsonProperty;
