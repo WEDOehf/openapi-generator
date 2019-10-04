@@ -33,7 +33,7 @@ class ReferenceProcessor
 		$parent = $type->getParentClass();
 		//inheritance
 		if (($parent !== null) && (!in_array($parent->getShortName(), $this->generator->getConfig()->skipClasses, true))) {
-			if (isset($this->json->components->schemas[$parent->getShortName()])) {
+			if (!isset($this->json->components->schemas[$parent->getShortName()])) {
 				$this->generateRef($parent);
 			}
 
@@ -112,7 +112,7 @@ class ReferenceProcessor
 		}
 
 		$useStatements = Helper::getUseStatements($filename);
-		if (isset($useStatements[$seeAnnotation])) {
+		if (!isset($useStatements[$seeAnnotation])) {
 			return null;
 		}
 
@@ -145,8 +145,12 @@ class ReferenceProcessor
 		}
 
 		$propertyType = explode(' ', $property->annotations['var'][0])[0];
+		$enumDescription = $this->getSeeEnumInfo($type, $property);
 
-		$jsonProperty->description = $this->getSeeEnumInfo($type, $property);
+		if ($enumDescription !== NULL) {
+			$jsonProperty->description = $enumDescription;
+		}
+
 		$arrayDimensions = 0;
 		for (; Strings::endsWith($propertyType, '[]'); $arrayDimensions++) {
 			$propertyType = substr($propertyType, 0, strlen($propertyType) - 2);
@@ -204,7 +208,7 @@ class ReferenceProcessor
 		$info = "Possible values: \n";
 		foreach ($constants as $const) {
 			$annotations = AnnotationsParser::getAll($const);
-			$desc = isset($annotations['description']) ? strtolower(str_replace('_', ' ', $const->name)) : implode("\n", $annotations['description']);
+			$desc = !isset($annotations['description']) ? strtolower(str_replace('_', ' ', $const->name)) : implode("\n", $annotations['description']);
 
 			$info .= '* `' . $const->name . '` - ' . $desc . "\n";
 		}
