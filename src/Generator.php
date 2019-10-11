@@ -4,7 +4,6 @@ namespace Wedo\OpenApiGenerator;
 
 use Nette\SmartObject;
 use Nette\Utils\Finder;
-use Nette\Utils\Json;
 use Wedo\OpenApiGenerator\OpenApiDefinition\Schema;
 use Wedo\OpenApiGenerator\Processors\ClassProcessor;
 use Wedo\OpenApiGenerator\Processors\ReferenceProcessor;
@@ -48,7 +47,7 @@ class Generator
 	{
 		$this->onBeforeGenerate();
 		$this->processDirectory();
-		$dirs = glob(trim($this->config->path . '/') . '/*', GLOB_ONLYDIR);
+		$dirs = glob(rtrim($this->config->path . '/') . '/*', GLOB_ONLYDIR);
 		if ($dirs !== false) {
 			foreach ($dirs as $dir) {
 				$dirname = basename($dir);
@@ -57,7 +56,6 @@ class Generator
 		}
 
 		$json = json_encode($this->json, JSON_PRETTY_PRINT);
-		$json = preg_replace('/,\s*"[^"]+":?null|"[^"]+":?null,?/', '', $json);
 		return $json ?? '';
 	}
 
@@ -94,7 +92,7 @@ class Generator
 	private function processDirectory(string $dir = ''): void
 	{
 		$nsDir = ($dir !== '' ? ($dir . '\\') : '');
-		$path = trim($this->config->path, '/') . '/';
+		$path = rtrim($this->config->path, '/') . '/';
 		foreach (Finder::findFiles('*' . $this->config->controllerSuffix . '.php')->in($path . $dir) as $file) {
 
 			$className = $this->config->namespace . $nsDir . str_replace('.php', '', $file->getFileName());

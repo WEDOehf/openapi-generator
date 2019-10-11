@@ -64,4 +64,5 @@ class ClassProcessor
 	{
 		return $this->methodProcessor;
 	}
+
 }

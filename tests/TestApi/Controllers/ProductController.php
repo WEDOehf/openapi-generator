@@ -9,7 +9,6 @@ class ProductController extends BaseController
 {
 
 	/**
-	 * @param int $id
 	 * @param bool $extra
 	 */
 	public function get(int $id): ProductResponse

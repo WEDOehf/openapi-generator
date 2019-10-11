@@ -37,9 +37,10 @@ class ParameterProcessor
 	 */
 	public function process(array $annotations, array $methodParams, string $requestMethod, Path $path): void
 	{
-		if(!isset($annotations['param'])) {
+		if (!isset($annotations['param'])) {
 			return;
 		}
+
 		foreach ($annotations['param'] as $param) {
 			if (count($methodParams) > 0 && $methodParams[0]->getClass() !== null && $methodParams[0]->getClass()->is($this->config->baseRequest)) {
 				$param = $this->generateParameter($param, $methodParams, $requestMethod);

@@ -7,6 +7,7 @@ use Nette\Reflection\ClassType;
 use Nette\Reflection\Method;
 use Nette\Reflection\Parameter;
 use Nette\SmartObject;
+use ReflectionType;
 use Wedo\OpenApiGenerator\Exceptions\InvalidReturnTypeDefinitionException;
 use Wedo\OpenApiGenerator\Generator;
 use Wedo\OpenApiGenerator\Helper;
@@ -94,7 +95,7 @@ class MethodProcessor
 	/**
 	 * @return Response[]
 	 */
-	public function generateResponses(\ReflectionType $returnType): array
+	public function generateResponses(ReflectionType $returnType): array
 	{
 		$returnType = ClassType::from($returnType->getName());
 		$this->generator->getRefProcessor()->generateRef($returnType);

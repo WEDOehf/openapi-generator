@@ -140,14 +140,14 @@ class ReferenceProcessor
 	 */
 	private function getPropertyType(ClassType $type, Property $property, ArrayHash $jsonProperty): array
 	{
-		if (isset($property->annotations['var']) && Strings::trim((string) $property->annotations['var']) === '') {
+		if (isset($property->annotations['var']) && Strings::trim((string) $property->annotations['var'][0]) === '') {
 			throw new Exception('Missing var annotation on ' . $type->getName() . '::$' . $property->getName());
 		}
 
 		$propertyType = explode(' ', $property->annotations['var'][0])[0];
 		$enumDescription = $this->getSeeEnumInfo($type, $property);
 
-		if ($enumDescription !== NULL) {
+		if ($enumDescription !== null) {
 			$jsonProperty->description = $enumDescription;
 		}
 
