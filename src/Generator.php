@@ -55,8 +55,8 @@ class Generator
 			}
 		}
 
-		$json = json_encode($this->json, JSON_PRETTY_PRINT);
-		return $json ?? '';
+		$json = (string) json_encode($this->json, JSON_PRETTY_PRINT);
+		return $json;
 	}
 
 	public function getJson(): Schema
