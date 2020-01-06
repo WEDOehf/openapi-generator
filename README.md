@@ -10,7 +10,7 @@ Framework agnostic Open api generator from phpdoc and php type hints
 
 ## Installation
 
-	$ composer require dodo-it/entity-generator
+	$ composer require wedo/openapi-generator
 
 ## Configuration
 
