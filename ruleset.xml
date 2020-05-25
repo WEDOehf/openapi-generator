@@ -35,4 +35,7 @@
     <rule ref="Squiz.Classes.ClassFileName.NoMatch">
         <exclude-pattern>*/tests/*</exclude-pattern>
     </rule>
+    <rule ref="Squiz.Commenting.VariableComment.Missing">
+        <exclude-pattern>*/TestApi74/*</exclude-pattern>
+    </rule>
 </ruleset>
