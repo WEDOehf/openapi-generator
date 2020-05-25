@@ -105,7 +105,7 @@ class ParameterProcessor
 			throw new Exception('Type not set for parameter  in ' . $this->currentClassPath);
 		}
 
-		$jsonParam->schema = ['type' => Helper::convertType($methodParam->getType()->__toString())];
+		$jsonParam->schema = ['type' => Helper::convertType($methodParam->getType()->getName())];
 		if ($methodParam->isDefaultValueAvailable()) {
 			if ($requestMethod === 'get') {
 				$jsonParam->in = 'query';

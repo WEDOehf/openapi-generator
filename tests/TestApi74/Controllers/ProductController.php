@@ -1,11 +1,11 @@
 <?php declare (strict_types = 1);
 
-namespace Wedo\OpenApiGenerator\Tests\TestApi\Controllers;
+namespace Wedo\OpenApiGenerator\Tests\TestApi74\Controllers;
 
 use DateTime;
-use Wedo\OpenApiGenerator\Tests\TestApi\Responses\ProductResponse;
-use Wedo\OpenApiGenerator\Tests\TestApi\Entities\ProductListItem;
-use Wedo\OpenApiGenerator\Tests\TestApi\Responses\ProductListResponse;
+use Wedo\OpenApiGenerator\Tests\TestApi74\Entities\ProductListItem;
+use Wedo\OpenApiGenerator\Tests\TestApi74\Responses\ProductListResponse;
+use Wedo\OpenApiGenerator\Tests\TestApi74\Responses\ProductResponse;
 
 class ProductController extends BaseController
 {

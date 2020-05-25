@@ -3,7 +3,7 @@ php:
   - 7.1
   - 7.2
   - 7.3
-
+  - 7.4
 install:
   - travis_retry composer install --no-progress --prefer-dist
 
@@ -23,12 +23,12 @@ jobs:
         - composer run-script tests
 
     - stage: Quality Assurance
-      php: 7.1
+      php: 7.4
       script:
         - composer run-script qa
 
     - stage: Phpstan
-      php: 7.1
+      php: 7.4
       script:
         - composer run-script phpstan-install
         - composer run-script phpstan
