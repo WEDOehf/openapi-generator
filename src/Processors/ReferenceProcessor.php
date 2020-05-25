@@ -144,7 +144,10 @@ class ReferenceProcessor
 			throw new Exception('Missing var annotation on ' . $type->getName() . '::$' . $property->getName());
 		}
 
-		$propertyType = explode(' ', $property->annotations['var'][0])[0];
+		$propertyType = (PHP_VERSION_ID >= 70400 && $property->hasType())
+			? $property->getType()->getName()
+			: explode(' ', $property->annotations['var'][0])[0];
+
 		$enumDescription = $this->getSeeEnumInfo($type, $property);
 
 		if ($enumDescription !== null) {
