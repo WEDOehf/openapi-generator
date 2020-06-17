@@ -1,11 +1,10 @@
 <?php declare (strict_types = 1);
 
-namespace Wedo\OpenApiGenerator\Tests\TestApi\Responses;
+namespace Wedo\OpenApiGenerator\Tests\TestApi74\Responses;
 
 class Response
 {
 
-	/** @var bool */
-	public $success = true;
+	public bool $success = true;
 
 }

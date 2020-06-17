@@ -130,9 +130,10 @@ class ReferenceProcessor
 		if ($arrayDimensions > 0) {
 			$jsonProperty->type = 'array';
 			$jsonProperty->items = ['type' => Helper::convertType($propertyType)];
-		} else {
-			$jsonProperty->type = Helper::convertType($propertyType);
+			return;
 		}
+
+		$jsonProperty->type = Helper::convertType($propertyType);
 	}
 
 	/**
@@ -144,9 +145,19 @@ class ReferenceProcessor
 			throw new Exception('Missing var annotation on ' . $type->getName() . '::$' . $property->getName());
 		}
 
-		$propertyType = (PHP_VERSION_ID >= 70400 && $property->hasType())
-			? $property->getType()->getName()
-			: explode(' ', $property->annotations['var'][0])[0];
+		$propertyType = null;
+
+		if (PHP_VERSION_ID >= 70400 && $property->hasType()) {
+			$propertyType = $property->getType()->getName();
+		}
+
+		if ($propertyType === null || $propertyType === 'array') {
+			if (Strings::trim((string) $property->annotations['var'][0]) === '') {
+				throw new Exception('Missing var annotation for array on ' . $type->getName() . '::$' . $property->getName());
+			}
+
+			$propertyType = explode(' ', $property->annotations['var'][0])[0];
+		}
 
 		$enumDescription = $this->getSeeEnumInfo($type, $property);
 
