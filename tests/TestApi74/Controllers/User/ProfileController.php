@@ -2,9 +2,9 @@
 
 namespace Wedo\OpenApiGenerator\Tests\TestApi74\Controllers\User;
 
-use Wedo\OpenApiGenerator\Tests\TestApi\Controllers\BaseController;
-use Wedo\OpenApiGenerator\Tests\TestApi\Requests\EditProfileRequest;
-use Wedo\OpenApiGenerator\Tests\TestApi\Responses\Response;
+use Wedo\OpenApiGenerator\Tests\TestApi74\Controllers\BaseController;
+use Wedo\OpenApiGenerator\Tests\TestApi74\Requests\EditProfileRequest;
+use Wedo\OpenApiGenerator\Tests\TestApi74\Responses\Response;
 
 class ProfileController extends BaseController
 {

@@ -21,7 +21,7 @@ class GeneratorTest extends TestCase
 		$generator = new Generator($config);
 		$json = $generator->generate();
 		$this->assertJson($json);
-		file_put_contents(__DIR__ . '/out.json', $json);
+		file_put_contents(__DIR__ . '/out73.json', $json);
 	}
 
 	public function testGeneratePhp74(): void
@@ -39,7 +39,14 @@ class GeneratorTest extends TestCase
 		$generator = new Generator($config);
 		$json = $generator->generate();
 		$this->assertJson($json);
-		file_put_contents(__DIR__ . '/out.json', $json);
+		file_put_contents(__DIR__ . '/out74.json', $json);
+	}
+
+	public function testGeneratePhp73SameAsPhp74(): void
+	{
+		$this->testGenerate();
+		$this->testGeneratePhp74();
+		$this->assertFileEquals(__DIR__ . '/out74.json', __DIR__ . '/out73.json');
 	}
 
 }

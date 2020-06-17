@@ -6,6 +6,7 @@ use Exception;
 use InvalidArgumentException;
 use Nette\Reflection\Parameter as MethodParameter;
 use Nette\Utils\Strings;
+use ReflectionNamedType;
 use Wedo\OpenApiGenerator\Config;
 use Wedo\OpenApiGenerator\Generator;
 use Wedo\OpenApiGenerator\Helper;
@@ -37,6 +38,13 @@ class ParameterProcessor
 	 */
 	public function process(array $annotations, array $methodParams, string $requestMethod, Path $path): void
 	{
+		//add method typehint parameters to annotations if they're not there
+		foreach ($methodParams as $methodParam) {
+			/** @var ReflectionNamedType $type */
+			$type = $methodParam->getType();
+			$annotations['param'][] = $type->getName() . ' $' . $methodParam->getName();
+		}
+
 		if (!isset($annotations['param'])) {
 			return;
 		}

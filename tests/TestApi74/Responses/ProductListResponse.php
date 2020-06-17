@@ -2,7 +2,7 @@
 
 namespace Wedo\OpenApiGenerator\Tests\TestApi74\Responses;
 
-use TestApi\Entities\ProductListItem;
+use Wedo\OpenApiGenerator\Tests\TestApi74\Entities\ProductListItem;
 
 class ProductListResponse extends Response
 {
