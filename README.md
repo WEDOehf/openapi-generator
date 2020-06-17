@@ -17,6 +17,10 @@ Framework agnostic Open api generator from phpdoc and php type hints
 see src/Config.php
 
 ## Usage
+
+Check tests folder, there's full working minimal API there: https://github.com/WEDOehf/openapi-generator/tree/master/tests
+
+this is minimal config required to run, to check all options see src/Config.php
 ```php
 //minimal config
 $config = new Config();
