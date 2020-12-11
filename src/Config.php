@@ -38,7 +38,7 @@ class Config
 	public $dateTimeClass = 'App\Common\JsonDateTime';
 
 	/** @var array<string, string> key type is replaced with value, for example ['App\TranslatableString' => 'string'] */
-	public array $tpypeReplacement = [];
+	public array $typeReplacement = [];
 
 	/**
 	 * annotation that show some property is required on request

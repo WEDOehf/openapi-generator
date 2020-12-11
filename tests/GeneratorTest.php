@@ -19,7 +19,7 @@ class GeneratorTest extends TestCase
 		$config->path = __DIR__ . '/TestApi/Controllers';
 		$config->namespace = 'Wedo\OpenApiGenerator\Tests\TestApi\\Controllers\\';
 		$config->baseRequest = Base73Request::class;
-		$config->tpypeReplacement = [JsonTranslatableMessage::class => 'string'];
+		$config->typeReplacement = [JsonTranslatableMessage::class => 'string'];
 		$generator = new Generator($config);
 		$json = $generator->generate();
 		$this->assertJson($json);
@@ -40,7 +40,7 @@ class GeneratorTest extends TestCase
 		$config->path = __DIR__ . '/TestApi74/Controllers';
 		$config->namespace = 'Wedo\OpenApiGenerator\Tests\TestApi74\\Controllers\\';
 		$config->baseRequest = BaseRequest::class;
-		$config->tpypeReplacement = [\TestApi74\Utility\JsonTranslatableMessage::class => 'string'];
+		$config->typeReplacement = [\TestApi74\Utility\JsonTranslatableMessage::class => 'string'];
 		$generator = new Generator($config);
 		$json = $generator->generate();
 		$this->assertJson($json);
