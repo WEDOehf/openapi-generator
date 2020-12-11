@@ -53,7 +53,6 @@ $this->generator->getClassProcessor()->getMethodProcessor()->onProcess[] = funct
 $this->generator->getJson()->info->title = 'My api';
 
 //add your security schemes if needed
-
 $this->generator->getJson()->components->securitySchemes = [
     'APIKeyHeader' => [
             'type' => 'apiKey',

@@ -1,0 +1,201 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "v1.0.0",
+    "title": "Api"
+  },
+  "servers": [
+    {
+      "url": "http:\/\/www.test-api.com\/api\/v1"
+    }
+  ],
+  "paths": {
+    "\/product\/get\/{id}": {
+      "get": {
+        "summary": "",
+        "parameters": [
+          {
+            "name": "extra",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success response",
+            "content": {
+              "application\/json": {
+                "schema": {
+                  "$ref": "#\/components\/schemas\/ProductResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "\/product\/get-list\/{id}": {
+      "get": {
+        "summary": "",
+        "parameters": [
+          {
+            "name": "extra",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success response",
+            "content": {
+              "application\/json": {
+                "schema": {
+                  "$ref": "#\/components\/schemas\/ProductListResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "\/user\/profile\/update": {
+      "post": {
+        "summary": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success response",
+            "content": {
+              "application\/json": {
+                "schema": {
+                  "$ref": "#\/components\/schemas\/Response"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application\/json": {
+              "schema": {
+                "$ref": "#\/components\/schemas\/EditProfileRequest"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "APIKeyHeader": []
+    },
+    {
+      "SessionId": []
+    }
+  ],
+  "components": {
+    "schemas": {
+      "DateTime": {
+        "properties": []
+      },
+      "ProductResponse": {
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "price": {
+            "type": "integer"
+          },
+          "published": {
+            "type": "boolean"
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "expires_at": {
+            "$ref": "#\/components\/schemas\/DateTime"
+          }
+        }
+      },
+      "Response": {
+        "properties": {
+          "success": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ProductListResponse": {
+        "allOf": [
+          {
+            "$ref": "#\/components\/schemas\/Response"
+          }
+        ],
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#\/components\/schemas\/ProductListItem"
+            }
+          }
+        }
+      },
+      "ProductListItem": {
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "translatable_name": {
+            "type": "string"
+          }
+        }
+      },
+      "EditProfileRequest": {
+        "properties": {
+          "first_name": {
+            "type": "string"
+          },
+          "last_name": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "securitySchemes": []
+  }
+}
