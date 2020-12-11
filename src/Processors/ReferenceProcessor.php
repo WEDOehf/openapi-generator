@@ -69,9 +69,17 @@ class ReferenceProcessor
 	{
 		$jsonProperty = new ArrayHash();
 		[$propertyType, $arrayDimensions] = $this->getPropertyType($type, $property, $jsonProperty);
+
+		if (isset($this->generator->getConfig()->tpypeReplacement[$propertyType])) {
+			$propertyType = $this->generator->getConfig()->tpypeReplacement[$propertyType];
+		}
+
 		if (class_exists($propertyType)) {
 			$jsonProperty = $this->extractObjectProperty($propertyType, $jsonProperty, $arrayDimensions);
 		} else {
+			if (isset($this->generator->getConfig()->tpypeReplacement[$propertyType])) {
+				$property = $this->generator->getConfig()->tpypeReplacement[$propertyType];
+			}
 			$this->extractBuiltInProperty($arrayDimensions, $jsonProperty, $propertyType);
 		}
 

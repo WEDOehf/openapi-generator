@@ -2,6 +2,8 @@
 
 namespace Wedo\OpenApiGenerator\Tests\TestApi\Entities;
 
+use TestApi\Utility\JsonTranslatableMessage;
+
 class ProductListItem
 {
 
@@ -11,4 +13,6 @@ class ProductListItem
 	/** @var string */
 	public $name;
 
+	/** @var JsonTranslatableMessage */
+	public $translatable_name;
 }

@@ -3,6 +3,7 @@
 namespace Wedo\OpenApiGenerator\Tests;
 
 use PHPUnit\Framework\TestCase;
+use TestApi\Utility\JsonTranslatableMessage;
 use Wedo\OpenApiGenerator\Config;
 use Wedo\OpenApiGenerator\Generator;
 use Wedo\OpenApiGenerator\Tests\TestApi\Requests\BaseRequest as Base73Request;
@@ -18,10 +19,13 @@ class GeneratorTest extends TestCase
 		$config->path = __DIR__ . '/TestApi/Controllers';
 		$config->namespace = 'Wedo\OpenApiGenerator\Tests\TestApi\\Controllers\\';
 		$config->baseRequest = Base73Request::class;
+		$config->tpypeReplacement = [JsonTranslatableMessage::class => 'string'];
 		$generator = new Generator($config);
 		$json = $generator->generate();
 		$this->assertJson($json);
 		file_put_contents(__DIR__ . '/out73.json', $json);
+
+		$this->assertJsonFileEqualsJsonFile('expected73.json', 'out73.json');
 	}
 
 	public function testGeneratePhp74(): void
@@ -36,10 +40,13 @@ class GeneratorTest extends TestCase
 		$config->path = __DIR__ . '/TestApi74/Controllers';
 		$config->namespace = 'Wedo\OpenApiGenerator\Tests\TestApi74\\Controllers\\';
 		$config->baseRequest = BaseRequest::class;
+		$config->tpypeReplacement = [\TestApi74\Utility\JsonTranslatableMessage::class => 'string'];
 		$generator = new Generator($config);
 		$json = $generator->generate();
 		$this->assertJson($json);
 		file_put_contents(__DIR__ . '/out74.json', $json);
+
+		$this->assertJsonFileEqualsJsonFile('expected74.json', 'out74.json');
 	}
 
 	public function testGeneratePhp73SameAsPhp74(): void
