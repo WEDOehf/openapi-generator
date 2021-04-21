@@ -15,21 +15,21 @@
         "summary": "",
         "parameters": [
           {
-            "name": "extra",
-            "in": "query",
-            "description": "",
-            "required": false,
-            "schema": {
-              "type": "boolean"
-            }
-          },
-          {
             "name": "id",
             "in": "path",
             "description": "",
             "required": true,
             "schema": {
               "type": "integer"
+            }
+          },
+          {
+            "name": "extra",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "boolean"
             }
           }
         ],
@@ -52,21 +52,21 @@
         "summary": "",
         "parameters": [
           {
+            "name": "id",
+            "in": "path",
+            "description": "product list id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
             "name": "extra",
             "in": "query",
             "description": "",
             "required": false,
             "schema": {
               "type": "boolean"
-            }
-          },
-          {
-            "name": "id",
-            "in": "path",
-            "description": "",
-            "required": true,
-            "schema": {
-              "type": "integer"
             }
           }
         ],

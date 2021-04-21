@@ -38,11 +38,20 @@ class ParameterProcessor
 	 */
 	public function process(array $annotations, array $methodParams, string $requestMethod, Path $path): void
 	{
+
+		if (!isset($annotations['param'])) {
+			$annotations['param'] = [];
+		}
+
 		//add method typehint parameters to annotations if they're not there
 		foreach ($methodParams as $methodParam) {
+			if ($this->hasParamAnnotation($annotations['param'], $methodParam->getName())) {
+				continue;
+			}
+
 			/** @var ReflectionNamedType $type */
 			$type = $methodParam->getType();
-			$annotations['param'][] = $type->getName() . ' $' . $methodParam->getName();
+			array_unshift($annotations['param'], $type->getName() . ' $' . $methodParam->getName());
 		}
 
 		if (!isset($annotations['param'])) {
@@ -62,6 +71,18 @@ class ParameterProcessor
 
 			$path->parameters[] = $this->generateParameter($param, $methodParams, $requestMethod);
 		}
+	}
+
+	private function hasParamAnnotation(array $paramList, string $param): bool
+	{
+
+		foreach ($paramList as $existingParam) {
+			if(explode(' ', $existingParam)[1] === '$' . $param) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**

@@ -25,6 +25,7 @@ class ProductController extends BaseController
 	}
 
 	/**
+	 * @param int $id product list id
 	 * @param bool $extra
 	 */
 	public function getList(int $id): ProductListResponse
