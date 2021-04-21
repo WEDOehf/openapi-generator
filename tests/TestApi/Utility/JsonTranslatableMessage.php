@@ -2,12 +2,12 @@
 
 namespace TestApi\Utility;
 
-class JsonTranslatableMessage  implements \JsonSerializable
+use JsonSerializable;
+
+class JsonTranslatableMessage  implements JsonSerializable
 {
 
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	private $message;
 
 	public function __construct(string $message)
@@ -15,8 +15,13 @@ class JsonTranslatableMessage  implements \JsonSerializable
 		$this->message = $message;
 	}
 
-	public function jsonSerialize()
+
+	/**
+	 * @return string
+	 */
+	public function jsonSerialize() //phpcs:ignore
 	{
 		return $this->message;
 	}
+
 }

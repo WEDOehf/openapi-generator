@@ -38,7 +38,6 @@ class ParameterProcessor
 	 */
 	public function process(array $annotations, array $methodParams, string $requestMethod, Path $path): void
 	{
-
 		if (!isset($annotations['param'])) {
 			$annotations['param'] = [];
 		}
@@ -73,11 +72,13 @@ class ParameterProcessor
 		}
 	}
 
+	/**
+	 * @param string[] $paramList
+	 */
 	private function hasParamAnnotation(array $paramList, string $param): bool
 	{
-
 		foreach ($paramList as $existingParam) {
-			if(explode(' ', $existingParam)[1] === '$' . $param) {
+			if (explode(' ', $existingParam)[1] === '$' . $param) {
 				return true;
 			}
 		}

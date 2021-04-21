@@ -12,4 +12,5 @@ class ProductListItem
 	public string $name;
 
 	public JsonTranslatableMessage $translatable_name;
+
 }

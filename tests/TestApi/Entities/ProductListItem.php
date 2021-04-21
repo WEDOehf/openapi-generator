@@ -15,4 +15,5 @@ class ProductListItem
 
 	/** @var JsonTranslatableMessage */
 	public $translatable_name;
+
 }
