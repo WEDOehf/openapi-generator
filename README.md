@@ -3,7 +3,7 @@ Framework agnostic Open api generator from phpdoc and php type hints
 
 -----
 [![Latest Stable Version](https://poser.pugx.org/wedo/openapi-generator/v/stable)](https://packagist.org/packages/wedo/openapi-generator)
-[![Build Status](https://travis-ci.org/WEDOEhf/openapi-generator.svg?branch=master)](https://travis-ci.org/WEDOEhf/openapi-generator)
+[![build](https://github.com/WEDOehf/openapi-generator/actions/workflows/main.yml/badge.svg)](https://github.com/WEDOehf/openapi-generator/actions/workflows/main.yml)
 [![codecov](https://codecov.io/gh/WEDOEhf/openapi-generator/branch/master/graph/badge.svg)](https://codecov.io/gh/WEDOEhf/openapi-generator)
 [![PHPStan](https://img.shields.io/badge/PHPStan-enabled-brightgreen.svg?style=flat)](https://github.com/phpstan/phpstan)
 [![License](https://poser.pugx.org/wedo/openapi-generator/license)](https://packagist.org/packages/wedo/openapi-generator)
