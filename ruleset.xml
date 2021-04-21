@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ruleset name="ruleset">
     <rule ref="./vendor/ninjify/coding-standard/ruleset.xml">
+        <exclude name="Squiz.Commenting.FunctionComment.ExtraParamComment" />
     </rule>
     <rule ref="Generic.WhiteSpace.ScopeIndent">
         <properties>

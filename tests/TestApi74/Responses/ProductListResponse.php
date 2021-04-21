@@ -7,9 +7,7 @@ use Wedo\OpenApiGenerator\Tests\TestApi74\Entities\ProductListItem;
 class ProductListResponse extends Response
 {
 
-	/**
-	 * @var ProductListItem[]
-	 */
+	/** @var ProductListItem[] */
 	public array $data;
 
 }

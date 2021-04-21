@@ -1,10 +1,12 @@
 includes:
-	- temp/phpstan/vendor/phpstan/phpstan-deprecation-rules/rules.neon
-	- temp/phpstan/vendor/phpstan/phpstan-nette/extension.neon
-	- temp/phpstan/vendor/phpstan/phpstan-nette/rules.neon
-	- temp/phpstan/vendor/phpstan/phpstan-strict-rules/rules.neon
+	- vendor/phpstan/phpstan-deprecation-rules/rules.neon
+	- vendor/phpstan/phpstan-nette/extension.neon
+	- vendor/phpstan/phpstan-nette/rules.neon
+	- vendor/phpstan/phpstan-strict-rules/rules.neon
 
 parameters:
 	ignoreErrors:
 		- '#IAnnotation#'
 		- '#ClassType and null will always evaluate to true.#'
+		- '#Call to an undefined method ReflectionType::getName\(\).#'
+		- '#Cannot access property \$annotations on Nette\\Reflection\\Property\|string.#'

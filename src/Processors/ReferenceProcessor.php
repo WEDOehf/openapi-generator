@@ -80,6 +80,7 @@ class ReferenceProcessor
 			if (isset($this->generator->getConfig()->typeReplacement[$propertyType])) {
 				$property = $this->generator->getConfig()->typeReplacement[$propertyType];
 			}
+
 			$this->extractBuiltInProperty($arrayDimensions, $jsonProperty, $propertyType);
 		}
 

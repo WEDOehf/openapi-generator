@@ -25,7 +25,7 @@ class GeneratorTest extends TestCase
 		$this->assertJson($json);
 		file_put_contents(__DIR__ . '/out73.json', $json);
 
-		$this->assertJsonFileEqualsJsonFile('expected73.json', 'out73.json');
+		$this->assertJsonFileEqualsJsonFile(__DIR__ . '/expected73.json', __DIR__ . '/out73.json');
 	}
 
 	public function testGeneratePhp74(): void
@@ -46,11 +46,16 @@ class GeneratorTest extends TestCase
 		$this->assertJson($json);
 		file_put_contents(__DIR__ . '/out74.json', $json);
 
-		$this->assertJsonFileEqualsJsonFile('expected74.json', 'out74.json');
+		$this->assertJsonFileEqualsJsonFile(__DIR__ . '/expected74.json', __DIR__ . '/out74.json');
 	}
 
 	public function testGeneratePhp73SameAsPhp74(): void
 	{
+		if (PHP_VERSION_ID < 70400) {
+			$this->assertTrue(true);
+			return;
+		}
+
 		$this->testGenerate();
 		$this->testGeneratePhp74();
 		$this->assertFileEquals(__DIR__ . '/out74.json', __DIR__ . '/out73.json');
