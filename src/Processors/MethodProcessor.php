@@ -61,9 +61,10 @@ class MethodProcessor
 
 		$path->responses = $this->generateResponses($method->getReturnType());
 		$this->onProcess($method, $path);
-		$methodParams = $method->getParameters();
 
-		$requestMethod = $this->getRequestMethod($annotations, $methodParams);
+		$requestMethod = $this->getRequestMethod($annotations, $method);
+
+		$methodParams = $method->getParameters();
 		$this->parameterProcessor->process($annotations, $methodParams, $requestMethod, $path);
 
 		$pathKey = Helper::camelCase2path($method->getShortName());
@@ -84,9 +85,9 @@ class MethodProcessor
 	 * @param string[] $annotations
 	 * @param Parameter[] $methodParams
 	 */
-	protected function getRequestMethod(array $annotations, array $methodParams): string
+	protected function getRequestMethod(array $annotations, Method $method): string
 	{
-
+		$methodParams = $method->getParameters();
 
 		if (isset($methodParams[0]) && ($methodParams[0]->getType() !== null)) {
 			$type = $methodParams[0]->getType()->getName();
@@ -101,10 +102,10 @@ class MethodProcessor
 			return Strings::lower($annotations[$annotationName][0]);
 		}
 
-		$methodAttributes = PHP_VERSION_ID < 800000 ? [] : $methodParams[0]->getDeclaringFunction()->getAttributes($this->generator->getConfig()->httpMethodAnnotation);
+		$methodAttributes = PHP_VERSION_ID < 80000 ? [] : $method->getAttributes($this->generator->getConfig()->httpMethodAnnotation);
+
 		if (count($methodAttributes) > 0) {
 			$attribute = $methodAttributes[0]->newInstance();
-
 			return Strings::lower($attribute->{$this->generator->getConfig()->httpMethodAttributeProperty});
 		}
 
