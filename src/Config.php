@@ -41,10 +41,17 @@ class Config
 	public $typeReplacement = [];
 
 	/**
-	 * annotation that show some property is required on request
+	 * annotation/attribute that show some property is required on request
 	 *
 	 * @var string
 	 */
 	public $requiredAnnotation = 'required';
+
+	/**
+	 * method/class/property with this annotation/attribute will be skipped in openapi schema
+	 *
+	 * @var string
+	 */
+	public $internalAnnotation = 'internal';
 
 }
