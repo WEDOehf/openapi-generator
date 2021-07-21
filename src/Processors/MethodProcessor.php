@@ -7,6 +7,7 @@ use Nette\Reflection\ClassType;
 use Nette\Reflection\Method;
 use Nette\Reflection\Parameter;
 use Nette\SmartObject;
+use Nette\Utils\Strings;
 use ReflectionType;
 use Wedo\OpenApiGenerator\Exceptions\InvalidReturnTypeDefinitionException;
 use Wedo\OpenApiGenerator\Generator;
@@ -85,15 +86,29 @@ class MethodProcessor
 	 */
 	protected function getRequestMethod(array $annotations, array $methodParams): string
 	{
-		$requestMethod = !isset($annotations['httpMethod']) ? 'get' : strtolower($annotations['httpMethod'][0]);
+
+
 		if (isset($methodParams[0]) && ($methodParams[0]->getType() !== null)) {
 			$type = $methodParams[0]->getType()->getName();
 			if (class_exists($type) && ClassType::from($type)->is($this->generator->getConfig()->baseRequest)) {
-				$requestMethod = 'post';
+				return 'post';
 			}
 		}
 
-		return $requestMethod;
+		$annotationName = $this->generator->getConfig()->httpMethodAnnotation;
+
+		if (isset($annotations[$annotationName])) {
+			return Strings::lower($annotations[$annotationName][0]);
+		}
+
+		$methodAttributes = PHP_VERSION_ID < 800000 ? [] : $methodParams[0]->getDeclaringFunction()->getAttributes($this->generator->getConfig()->httpMethodAnnotation);
+		if (count($methodAttributes) > 0) {
+			$attribute = $methodAttributes[0]->newInstance();
+
+			return Strings::lower($attribute->{$this->generator->getConfig()->httpMethodAttributeProperty});
+		}
+
+		return 'get';
 	}
 
 	/**
