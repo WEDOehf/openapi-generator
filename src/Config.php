@@ -54,4 +54,17 @@ class Config
 	 */
 	public $internalAnnotation = 'internal';
 
+	/**
+	 * annotation/attribute for defining httpMethod
+	 *
+	 * @var string
+	 */
+	public $httpMethodAnnotation = 'httpMethod';
+
+	/**
+	 * used only if you are using attribute, this is name of field that holds information on request (post/get/put/delete...)
+	 *
+	 * @var string
+	 */
+	public $httpMethodAttributeProperty = 'value';
 }
