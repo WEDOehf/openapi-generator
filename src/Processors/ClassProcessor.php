@@ -37,7 +37,11 @@ class ClassProcessor
 		}
 
 		$annotations = $classRef->getAnnotations();
-		if (isset($annotations['internal'])) {
+		if (isset($annotations[$this->generator->getConfig()->internalAnnotation])) {
+			return;
+		}
+
+		if (PHP_VERSION_ID > 80000 && count($classRef->getAttributes($this->generator->getConfig()->internalAnnotation)) > 0) {
 			return;
 		}
 

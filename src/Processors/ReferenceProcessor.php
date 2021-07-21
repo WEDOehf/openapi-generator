@@ -48,11 +48,18 @@ class ReferenceProcessor
 				continue;
 			}
 
-			if ($property->hasAnnotation('internal')) {
+			if ($property->hasAnnotation($this->generator->getConfig()->internalAnnotation)) {
 				continue;
 			}
 
-			if (isset($property->annotations[$this->generator->getConfig()->requiredAnnotation])) {
+			if (PHP_VERSION_ID > 80000 && count($property->getAttributes($this->generator->getConfig()->internalAnnotation)) > 0) {
+				continue;
+			}
+
+			if (
+				isset($property->annotations[$this->generator->getConfig()->requiredAnnotation]) ||
+				(PHP_VERSION_ID > 80000 && count($property->getAttributes($this->generator->getConfig()->requiredAnnotation)) > 0)
+			) {
 				$required[] = $property->name;
 			}
 
