@@ -23,18 +23,19 @@ class Helper
 		return $objType;
 	}
 
-
 	/**
 	 * @return string[]
 	 */
 	public static function getUseStatements(string $filename): array
 	{
 		$lines = file($filename);
+
 		if ($lines === false) {
 			return [];
 		}
 
 		$useStatements = [];
+
 		foreach ($lines as $line) {
 			$line = trim($line);
 
@@ -55,15 +56,16 @@ class Helper
 		return $useStatements;
 	}
 
-
 	public static function camelCase2path(string $className): string
 	{
 		$path = preg_replace('#([^.])(?=[A-Z])#', '$1-', $className);
+
 		if ($path === null) {
 			throw new Exception('Wrong name for ' . $className);
 		}
 
 		$path = Strings::lower($path);
+
 		return $path;
 	}
 

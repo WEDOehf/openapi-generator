@@ -7,13 +7,12 @@ use stdClass;
 class Path extends stdClass
 {
 
-	/** @var string */
-	public $summary;
+	public string $summary;
 
 	/** @var Parameter[] */
-	public $parameters = [];
+	public array $parameters = [];
 
 	/** @var Response[] */
-	public $responses;
+	public array $responses;
 
 }

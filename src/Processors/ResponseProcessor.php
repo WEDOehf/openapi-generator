@@ -10,8 +10,7 @@ use Wedo\OpenApiGenerator\OpenApiDefinition\Response;
 class ResponseProcessor
 {
 
-	/** @var Generator */
-	private $generator;
+	private Generator $generator;
 
 	public function __construct(Generator $generator)
 	{
@@ -27,9 +26,9 @@ class ResponseProcessor
 		$this->generator->getRefProcessor()->generateRef($returnType);
 		$responses = [];
 		$responses[200] = $this->createResponse('Success response', $returnType->shortName);
+
 		return $responses;
 	}
-
 
 	public function createResponse(string $description, string $type): Response
 	{
@@ -42,6 +41,7 @@ class ResponseProcessor
 				],
 			],
 		];
+
 		return $response;
 	}
 

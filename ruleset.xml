@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ruleset name="ruleset">
-    <rule ref="./vendor/ninjify/coding-standard/ruleset.xml">
+    <rule ref="./vendor/contributte/qa/ruleset-7.4.xml">
         <exclude name="Squiz.Commenting.FunctionComment.ExtraParamComment" />
     </rule>
     <rule ref="Generic.WhiteSpace.ScopeIndent">
@@ -26,6 +26,9 @@
     <!-- tests are named differently -->
     <rule ref="Generic.NamingConventions.CamelCapsFunctionName.ScopeNotCamelCaps">
         <exclude-pattern>*/tests/*</exclude-pattern>
+    </rule>
+    <rule ref="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint">
+        <exclude-pattern>*/tests/TestApi/*</exclude-pattern>
     </rule>
     <rule ref="PSR1.Methods.CamelCapsMethodName.NotCamelCaps">
         <exclude-pattern>*/tests/*</exclude-pattern>

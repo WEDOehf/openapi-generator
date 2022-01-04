@@ -8,9 +8,9 @@ class Components extends stdClass
 {
 
 	/** @var mixed[] */
-	public $schemas = [];
+	public array $schemas = [];
 
 	/** @var mixed[] */
-	public $securitySchemes = [];
+	public array $securitySchemes = [];
 
 }

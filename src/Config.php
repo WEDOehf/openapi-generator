@@ -5,66 +5,51 @@ namespace Wedo\OpenApiGenerator;
 class Config
 {
 
-	/** @var string */
-	public $serverUrl;
+	public string $serverUrl;
 
-	/** @var string */
-	public $path;
+	public string $path;
 
 	/**
 	 * Controllers namespace
-	 *
-	 * @var string
 	 */
-	public $namespace = 'App\Api\Controllers\\';
+	public string $namespace = 'App\Api\Controllers\\';
 
-	/** @var string */
-	public $controllerSuffix = 'Controller';
+	public string $controllerSuffix = 'Controller';
 
 	/**
 	 * public properties won't be extracted from this classes (only name is needed not FQN)
 	 *
 	 * @var string[]
 	 */
-	public $skipClasses = ['BaseRequest', 'BaseResponse', 'BaseEntity'];
+	public array $skipClasses = ['BaseRequest', 'BaseResponse', 'BaseEntity'];
 
-	/** @var string */
-	public $baseRequest = 'App\Api\Requests\BaseRequest';
+	public string $baseRequest = 'App\Api\Requests\BaseRequest';
 
-	/** @var string */
-	public $baseEnum = 'App\Enums\BaseEnum';
+	public string $baseEnum = 'App\Enums\BaseEnum';
 
-	/** @var string  */
-	public $dateTimeClass = 'App\Common\JsonDateTime';
+	public string $dateTimeClass = 'App\Common\JsonDateTime';
 
 	/** @var array<string, string> key type is replaced with value, for example ['App\TranslatableString' => 'string'] */
-	public $typeReplacement = [];
+	public array $typeReplacement = [];
 
 	/**
 	 * annotation/attribute that show some property is required on request
-	 *
-	 * @var string
 	 */
-	public $requiredAnnotation = 'required';
+	public string $requiredAnnotation = 'required';
 
 	/**
 	 * method/class/property with this annotation/attribute will be skipped in openapi schema
-	 *
-	 * @var string
 	 */
-	public $internalAnnotation = 'internal';
+	public string $internalAnnotation = 'internal';
 
 	/**
 	 * annotation/attribute for defining httpMethod
-	 *
-	 * @var string
 	 */
-	public $httpMethodAnnotation = 'httpMethod';
+	public string $httpMethodAnnotation = 'httpMethod';
 
 	/**
 	 * used only if you are using attribute, this is name of field that holds information on request (post/get/put/delete...)
-	 *
-	 * @var string
 	 */
-	public $httpMethodAttributeProperty = 'value';
+	public string $httpMethodAttributeProperty = 'value';
+
 }

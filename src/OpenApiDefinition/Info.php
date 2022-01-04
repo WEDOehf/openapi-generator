@@ -5,10 +5,8 @@ namespace Wedo\OpenApiGenerator\OpenApiDefinition;
 class Info
 {
 
-	/** @var string */
-	public $version = 'v1.0.0';
+	public string $version = 'v1.0.0';
 
-	/** @var string */
-	public $title = 'Api';
+	public string $title = 'Api';
 
 }

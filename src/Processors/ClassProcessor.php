@@ -14,14 +14,12 @@ class ClassProcessor
 
 	use SmartObject;
 
-	/** @var Generator */
-	private $generator;
-
-	/** @var MethodProcessor */
-	private $methodProcessor;
-
 	/** @var callable */
 	public $onProcess;
+
+	private Generator $generator;
+
+	private MethodProcessor $methodProcessor;
 
 	public function __construct(Generator $generator)
 	{
@@ -32,11 +30,13 @@ class ClassProcessor
 	public function process(string $className, string $dir): void
 	{
 		$classRef = ClassType::from($className);
+
 		if ($classRef->isAbstract()) {
 			return;
 		}
 
 		$annotations = $classRef->getAnnotations();
+
 		if (isset($annotations[$this->generator->getConfig()->internalAnnotation])) {
 			return;
 		}
@@ -57,6 +57,7 @@ class ClassProcessor
 		$this->generator->setCurrentClassPath(($dir !== '' ? ($dir . '/') : '') . $path);
 
 		$methods = $classRef->getMethods();
+
 		foreach ($methods as $method) {
 			if ($method->getDeclaringClass()->is($classRef->getName())) {
 				$this->methodProcessor->process($method);

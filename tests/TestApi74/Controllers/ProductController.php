@@ -21,6 +21,7 @@ class ProductController extends BaseController
 		$response->price = 129900;
 		$response->published = true;
 		$response->title = 'Product ' . $id . ' cost 1299,00';
+
 		return $response;
 	}
 
@@ -35,6 +36,7 @@ class ProductController extends BaseController
 		$product->id = 5;
 		$product->name = 'blabla';
 		$response->data = [$product];
+
 		return $response;
 	}
 

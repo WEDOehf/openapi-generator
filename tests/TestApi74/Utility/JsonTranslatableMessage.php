@@ -4,7 +4,7 @@ namespace TestApi74\Utility;
 
 use JsonSerializable;
 
-class JsonTranslatableMessage  implements JsonSerializable
+class JsonTranslatableMessage implements JsonSerializable
 {
 
 	private string $message;
@@ -13,7 +13,6 @@ class JsonTranslatableMessage  implements JsonSerializable
 	{
 		$this->message = $message;
 	}
-
 
 	/**
 	 * @return string
