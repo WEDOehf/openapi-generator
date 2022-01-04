@@ -5,8 +5,7 @@ namespace Wedo\OpenApiGenerator\OpenApiDefinition;
 class Response
 {
 
-	/** @var string */
-	public $description;
+	public string $description;
 
 	/** @var mixed */
 	public $content;

@@ -20,14 +20,12 @@ class MethodProcessor
 
 	use SmartObject;
 
-	/** @var Generator */
-	private $generator;
-
-	/** @var ParameterProcessor */
-	private $parameterProcessor;
-
 	/** @var callable */
 	public $onProcess;
+
+	private Generator $generator;
+
+	private ParameterProcessor $parameterProcessor;
 
 	public function __construct(Generator $generator)
 	{
@@ -45,6 +43,7 @@ class MethodProcessor
 		}
 
 		$annotations = $method->getAnnotations();
+
 		if (isset($annotations[$this->generator->getConfig()->internalAnnotation])) {
 			return;
 		}
@@ -55,6 +54,7 @@ class MethodProcessor
 
 		$path = new Path();
 		$path->summary = trim(implode("\n", $annotations['description'] ?? []));
+
 		if ($method->getReturnType() === null) {
 			throw new InvalidReturnTypeDefinitionException('Return type not set on method ' . $method->getName());
 		}
@@ -68,6 +68,7 @@ class MethodProcessor
 		$this->parameterProcessor->process($annotations, $methodParams, $requestMethod, $path);
 
 		$pathKey = Helper::camelCase2path($method->getShortName());
+
 		foreach ($methodParams as $methodParam) {
 			if ($methodParam->getType() === null) {
 				continue;
@@ -82,6 +83,34 @@ class MethodProcessor
 	}
 
 	/**
+	 * @return Response[]
+	 */
+	public function generateResponses(ReflectionType $returnType): array
+	{
+		$returnType = ClassType::from($returnType->getName());
+		$this->generator->getRefProcessor()->generateRef($returnType);
+		$responses = [];
+		$responses[200] = $this->createResponse('Success response', $returnType->shortName);
+
+		return $responses;
+	}
+
+	public function createResponse(string $description, string $type): Response
+	{
+		$response = new Response();
+		$response->description = $description;
+		$response->content = [
+			'application/json' => [
+				'schema' => [
+					'$ref' => '#/components/schemas/' . $type,
+				],
+			],
+		];
+
+		return $response;
+	}
+
+	/**
 	 * @param string[] $annotations
 	 * @param Parameter[] $methodParams
 	 */
@@ -91,6 +120,7 @@ class MethodProcessor
 
 		if (isset($methodParams[0]) && ($methodParams[0]->getType() !== null)) {
 			$type = $methodParams[0]->getType()->getName();
+
 			if (class_exists($type) && ClassType::from($type)->is($this->generator->getConfig()->baseRequest)) {
 				return 'post';
 			}
@@ -106,37 +136,11 @@ class MethodProcessor
 
 		if (count($methodAttributes) > 0) {
 			$attribute = $methodAttributes[0]->newInstance();
+
 			return Strings::lower($attribute->{$this->generator->getConfig()->httpMethodAttributeProperty});
 		}
 
 		return 'get';
-	}
-
-	/**
-	 * @return Response[]
-	 */
-	public function generateResponses(ReflectionType $returnType): array
-	{
-		$returnType = ClassType::from($returnType->getName());
-		$this->generator->getRefProcessor()->generateRef($returnType);
-		$responses = [];
-		$responses[200] = $this->createResponse('Success response', $returnType->shortName);
-		return $responses;
-	}
-
-
-	public function createResponse(string $description, string $type): Response
-	{
-		$response = new Response();
-		$response->description = $description;
-		$response->content = [
-			'application/json' => [
-				'schema' => [
-					'$ref' => '#/components/schemas/' . $type,
-				],
-			],
-		];
-		return $response;
 	}
 
 }

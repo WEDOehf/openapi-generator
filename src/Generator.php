@@ -16,23 +16,18 @@ class Generator
 
 	use SmartObject;
 
-	/** @var Schema */
-	private $json;
-
-	/** @var string */
-	private $currentClassPath;
-
-	/** @var ClassProcessor */
-	private $classProcessor;
-
-	/** @var ReferenceProcessor */
-	private $refProcessor;
-
-	/** @var Config */
-	private $config;
-
 	/** @var callable */
 	public $onBeforeGenerate;
+
+	private Schema $json;
+
+	private string $currentClassPath;
+
+	private ClassProcessor $classProcessor;
+
+	private ReferenceProcessor $refProcessor;
+
+	private Config $config;
 
 	public function __construct(Config $config)
 	{
@@ -42,12 +37,12 @@ class Generator
 		$this->classProcessor = new ClassProcessor($this);
 	}
 
-
 	public function generate(): string
 	{
 		$this->onBeforeGenerate();
 		$this->processDirectory();
 		$dirs = glob(rtrim($this->config->path . '/') . '/*', GLOB_ONLYDIR);
+
 		if ($dirs !== false) {
 			foreach ($dirs as $dir) {
 				$dirname = basename($dir);
@@ -65,7 +60,7 @@ class Generator
 
 	public function getCurrentClassPath(): ?string
 	{
-		return $this->currentClassPath;
+		return $this->currentClassPath ?? null;
 	}
 
 	public function setCurrentClassPath(string $currentClassPath): void
@@ -92,6 +87,7 @@ class Generator
 	{
 		$nsDir = ($dir !== '' ? ($dir . '\\') : '');
 		$path = rtrim($this->config->path, '/') . '/';
+
 		foreach (Finder::findFiles('*' . $this->config->controllerSuffix . '.php')->in($path . $dir) as $file) {
 
 			$className = $this->config->namespace . $nsDir . str_replace('.php', '', $file->getFileName());

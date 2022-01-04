@@ -8,16 +8,12 @@ namespace Wedo\OpenApiGenerator\OpenApiDefinition;
 class Parameter
 {
 
-	/** @var string */
-	public $name;
+	public string $name;
 
-	/** @var string */
-	public $in;
+	public string $in;
 
-	/** @var string */
-	public $description;
+	public string $description;
 
-	/** @var bool */
-	public $required;
+	public bool $required;
 
 }

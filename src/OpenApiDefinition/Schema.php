@@ -7,23 +7,20 @@ use stdClass;
 class Schema
 {
 
-	/** @var string */
-	public $openapi = '3.0.0';
+	public string $openapi = '3.0.0';
 
-	/** @var Info */
-	public $info;
+	public Info $info;
 
 	/** @var string[][] */
-	public $servers;
+	public array $servers;
 
 	/** @var mixed[] */
-	public $paths = [];
+	public array $paths = [];
 
 	/** @var mixed[] */
-	public $security = [];
+	public array $security = [];
 
-	/** @var Components */
-	public $components;
+	public Components $components;
 
 	public function __construct(string $url)
 	{
@@ -31,7 +28,7 @@ class Schema
 		$sec = new stdClass();
 		$sec->APIKeyHeader = [];
 		$this->security[] = $sec;
-		$this->servers = [ ['url' => $url]];
+		$this->servers = [['url' => $url]];
 		$sessionId = new stdClass();
 		$sessionId->SessionId = [];
 		$this->security[] = $sessionId;

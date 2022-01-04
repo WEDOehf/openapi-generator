@@ -16,14 +16,11 @@ use Wedo\OpenApiGenerator\OpenApiDefinition\Path;
 class ParameterProcessor
 {
 
-	/** @var ReferenceProcessor */
-	private $referenceProcessor;
+	private ReferenceProcessor $referenceProcessor;
 
-	/** @var string|null */
-	private $currentClassPath;
+	private ?string $currentClassPath = null;
 
-	/** @var Config */
-	private $config;
+	private Config $config;
 
 	public function __construct(Generator $generator)
 	{
@@ -65,25 +62,12 @@ class ParameterProcessor
 						'application/json' => ['schema' => $param->schema],
 					],
 				];
+
 				continue;
 			}
 
 			$path->parameters[] = $this->generateParameter($param, $methodParams, $requestMethod);
 		}
-	}
-
-	/**
-	 * @param string[] $paramList
-	 */
-	private function hasParamAnnotation(array $paramList, string $param): bool
-	{
-		foreach ($paramList as $existingParam) {
-			if (explode(' ', $existingParam)[1] === '$' . $param) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 	/**
@@ -93,6 +77,7 @@ class ParameterProcessor
 	{
 		$jsonParam = new Parameter();
 		$param = explode(' ', $annotation);
+
 		if (count($param) < 2) {
 			throw new InvalidArgumentException('Parameter has wrongly defined type hint on ' . $methodParameters[0]->getDeclaringClass()->getName());
 		}
@@ -102,6 +87,7 @@ class ParameterProcessor
 		$jsonParam->in = $requestMethod === 'post' ? 'body' : 'query';
 
 		$paramInMethodCall = false;
+
 		foreach ($methodParameters as $methodParameter) {
 			if ($methodParameter->getName() === $jsonParam->name) {
 				$this->generateParamType($requestMethod, $methodParameter, $jsonParam);
@@ -115,6 +101,7 @@ class ParameterProcessor
 		}
 
 		unset($param[0], $param[1]);
+
 		if (count($param) > 0) {
 			$jsonParam->description = implode(' ', $param);
 		}
@@ -136,12 +123,14 @@ class ParameterProcessor
 		}
 
 		$jsonParam->schema = ['type' => Helper::convertType($methodParam->getType()->getName())];
+
 		if ($methodParam->isDefaultValueAvailable()) {
 			if ($requestMethod === 'get') {
 				$jsonParam->in = 'query';
 			}
 		} else {
 			$jsonParam->required = true;
+
 			if ($requestMethod === 'get') {
 				$jsonParam->in = 'path';
 			} else {
@@ -151,6 +140,20 @@ class ParameterProcessor
 				unset($jsonParam->type);
 			}
 		}
+	}
+
+	/**
+	 * @param string[] $paramList
+	 */
+	private function hasParamAnnotation(array $paramList, string $param): bool
+	{
+		foreach ($paramList as $existingParam) {
+			if (explode(' ', $existingParam)[1] === '$' . $param) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 }
