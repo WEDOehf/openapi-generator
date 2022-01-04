@@ -22,8 +22,7 @@
   "require": {
     "php": "^8.0",
     "nette/utils": "^2.4|^3.0",
-    "nette/finder": "^2.4",
-    "nette/reflection": "^2.4"
+    "nette/finder": "^2.4"
   },
   "require-dev": {
     "contributte/qa": "^0.1",

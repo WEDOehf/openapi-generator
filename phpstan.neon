@@ -5,8 +5,8 @@ includes:
 	- vendor/phpstan/phpstan-strict-rules/rules.neon
 
 parameters:
+	checkGenericClassInNonGenericObjectType: false
 	ignoreErrors:
-		- '#IAnnotation#'
-		- '#ClassType and null will always evaluate to true.#'
 		- '#Call to an undefined method ReflectionType::getName\(\).#'
-		- '#Cannot access property \$annotations on Nette\\Reflection\\Property\|string.#'
+	excludePaths:
+		- src/AnnotationParser.php

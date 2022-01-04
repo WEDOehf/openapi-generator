@@ -3,11 +3,12 @@
 namespace Wedo\OpenApiGenerator\Processors;
 
 use Exception;
-use Nette\Reflection\ClassType;
-use Nette\Reflection\Method;
 use Nette\SmartObject;
 use Nette\Utils\Strings;
+use ReflectionClass;
+use ReflectionMethod;
 use ReflectionType;
+use Wedo\OpenApiGenerator\AnnotationParser;
 use Wedo\OpenApiGenerator\Exceptions\InvalidReturnTypeDefinitionException;
 use Wedo\OpenApiGenerator\Generator;
 use Wedo\OpenApiGenerator\Helper;
@@ -35,19 +36,19 @@ class MethodProcessor
 	/**
 	 * @throws Exception
 	 */
-	public function process(Method $method): void
+	public function process(ReflectionMethod $method): void
 	{
 		if (!$method->isPublic() || $method->isConstructor()) {
 			return;
 		}
 
-		$annotations = $method->getAnnotations();
+		$annotations = AnnotationParser::getAll($method);
 
 		if (isset($annotations[$this->generator->getConfig()->internalAnnotation])) {
 			return;
 		}
 
-		if (PHP_VERSION_ID > 80000 && count($method->getAttributes($this->generator->getConfig()->internalAnnotation)) > 0) {
+		if (count($method->getAttributes($this->generator->getConfig()->internalAnnotation)) > 0) {
 			return;
 		}
 
@@ -86,10 +87,10 @@ class MethodProcessor
 	 */
 	public function generateResponses(ReflectionType $returnType): array
 	{
-		$returnType = ClassType::from($returnType->getName());
+		$returnType = new ReflectionClass($returnType->getName());
 		$this->generator->getRefProcessor()->generateRef($returnType);
 		$responses = [];
-		$responses[200] = $this->createResponse('Success response', $returnType->shortName);
+		$responses[200] = $this->createResponse('Success response', $returnType->getShortName());
 
 		return $responses;
 	}
@@ -110,16 +111,16 @@ class MethodProcessor
 	}
 
 	/**
-	 * @param string[] $annotations
+	 * @param array<string, array<int, string|null>> $annotations
 	 */
-	protected function getRequestMethod(array $annotations, Method $method): string
+	protected function getRequestMethod(array $annotations, ReflectionMethod $method): string
 	{
 		$methodParams = $method->getParameters();
 
 		if (isset($methodParams[0]) && ($methodParams[0]->getType() !== null)) {
 			$type = $methodParams[0]->getType()->getName();
 
-			if (class_exists($type) && ClassType::from($type)->is($this->generator->getConfig()->baseRequest)) {
+			if (class_exists($type) && is_a((new ReflectionClass($type))->getName(), $this->generator->getConfig()->baseRequest, true)) {
 				return 'post';
 			}
 		}
@@ -130,7 +131,7 @@ class MethodProcessor
 			return Strings::lower($annotations[$annotationName][0]);
 		}
 
-		$methodAttributes = PHP_VERSION_ID < 80000 ? [] : $method->getAttributes($this->generator->getConfig()->httpMethodAnnotation);
+		$methodAttributes = $method->getAttributes($this->generator->getConfig()->httpMethodAnnotation);
 
 		if (count($methodAttributes) > 0) {
 			$attribute = $methodAttributes[0]->newInstance();

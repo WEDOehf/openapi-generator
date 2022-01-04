@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ruleset name="ruleset">
-    <rule ref="./vendor/contributte/qa/ruleset-7.4.xml">
+    <rule ref="./vendor/contributte/qa/ruleset-8.0.xml">
         <exclude name="Squiz.Commenting.FunctionComment.ExtraParamComment" />
     </rule>
     <rule ref="Generic.WhiteSpace.ScopeIndent">
