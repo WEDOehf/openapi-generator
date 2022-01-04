@@ -7,7 +7,6 @@ class Response
 
 	public string $description;
 
-	/** @var mixed */
-	public $content;
+	public mixed $content;
 
 }

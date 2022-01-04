@@ -4,9 +4,9 @@ namespace Wedo\OpenApiGenerator\Processors;
 
 use Exception;
 use InvalidArgumentException;
-use Nette\Reflection\Parameter as MethodParameter;
 use Nette\Utils\Strings;
 use ReflectionNamedType;
+use ReflectionParameter;
 use Wedo\OpenApiGenerator\Config;
 use Wedo\OpenApiGenerator\Generator;
 use Wedo\OpenApiGenerator\Helper;
@@ -31,7 +31,7 @@ class ParameterProcessor
 
 	/**
 	 * @param string[][]        $annotations
-	 * @param MethodParameter[] $methodParams
+	 * @param ReflectionParameter[] $methodParams
 	 */
 	public function process(array $annotations, array $methodParams, string $requestMethod, Path $path): void
 	{
@@ -55,7 +55,7 @@ class ParameterProcessor
 		}
 
 		foreach ($annotations['param'] as $param) {
-			if (count($methodParams) > 0 && $methodParams[0]->getClass() !== null && $methodParams[0]->getClass()->is($this->config->baseRequest)) {
+			if (count($methodParams) > 0 && $methodParams[0]->getClass() !== null && is_a($methodParams[0]->getClass()->getName(), $this->config->baseRequest, true)) {
 				$param = $this->generateParameter($param, $methodParams, $requestMethod);
 				$path->requestBody = [
 					'content' => [
@@ -71,7 +71,7 @@ class ParameterProcessor
 	}
 
 	/**
-	 * @param MethodParameter[] $methodParameters
+	 * @param ReflectionParameter[] $methodParameters
 	 */
 	public function generateParameter(string $annotation, array $methodParameters, string $requestMethod): Parameter
 	{
@@ -116,7 +116,7 @@ class ParameterProcessor
 	/**
 	 * @throws Exception
 	 */
-	protected function generateParamType(string $requestMethod, MethodParameter $methodParam, Parameter $jsonParam): void
+	protected function generateParamType(string $requestMethod, ReflectionParameter $methodParam, Parameter $jsonParam): void
 	{
 		if ($methodParam->getType() === null) {
 			throw new Exception('Type not set for parameter  in ' . $this->currentClassPath);

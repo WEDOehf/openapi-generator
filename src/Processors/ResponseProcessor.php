@@ -2,7 +2,7 @@
 
 namespace Wedo\OpenApiGenerator\Processors;
 
-use Nette\Reflection\ClassType;
+use ReflectionClass;
 use ReflectionType;
 use Wedo\OpenApiGenerator\Generator;
 use Wedo\OpenApiGenerator\OpenApiDefinition\Response;
@@ -22,10 +22,10 @@ class ResponseProcessor
 	 */
 	public function generateResponses(ReflectionType $returnType): array
 	{
-		$returnType = ClassType::from($returnType->getName());
+		$returnType = new ReflectionClass($returnType->getName());
 		$this->generator->getRefProcessor()->generateRef($returnType);
 		$responses = [];
-		$responses[200] = $this->createResponse('Success response', $returnType->shortName);
+		$responses[200] = $this->createResponse('Success response', $returnType->getShortName());
 
 		return $responses;
 	}

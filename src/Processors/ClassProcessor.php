@@ -3,9 +3,10 @@
 namespace Wedo\OpenApiGenerator\Processors;
 
 use Exception;
-use Nette\Reflection\ClassType;
 use Nette\SmartObject;
 use Nette\Utils\Strings;
+use ReflectionClass;
+use Wedo\OpenApiGenerator\AnnotationParser;
 use Wedo\OpenApiGenerator\Generator;
 use Wedo\OpenApiGenerator\Helper;
 
@@ -29,19 +30,19 @@ class ClassProcessor
 
 	public function process(string $className, string $dir): void
 	{
-		$classRef = ClassType::from($className);
+		$classRef = new ReflectionClass($className); //@phpstan-ignore-line
 
 		if ($classRef->isAbstract()) {
 			return;
 		}
 
-		$annotations = $classRef->getAnnotations();
+		$annotations = AnnotationParser::getAll($classRef);
 
 		if (isset($annotations[$this->generator->getConfig()->internalAnnotation])) {
 			return;
 		}
 
-		if (PHP_VERSION_ID > 80000 && count($classRef->getAttributes($this->generator->getConfig()->internalAnnotation)) > 0) {
+		if (count($classRef->getAttributes($this->generator->getConfig()->internalAnnotation)) > 0) {
 			return;
 		}
 
@@ -59,7 +60,7 @@ class ClassProcessor
 		$methods = $classRef->getMethods();
 
 		foreach ($methods as $method) {
-			if ($method->getDeclaringClass()->is($classRef->getName())) {
+			if (is_a($method->getDeclaringClass()->getName(), $classRef->getName(), true)) {
 				$this->methodProcessor->process($method);
 			}
 		}
