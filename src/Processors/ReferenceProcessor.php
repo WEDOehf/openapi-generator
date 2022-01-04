@@ -15,11 +15,9 @@ use Wedo\OpenApiGenerator\OpenApiDefinition\Schema;
 class ReferenceProcessor
 {
 
-	/** @var Generator */
-	private $generator;
+	private Generator $generator;
 
-	/** @var Schema */
-	private $json;
+	private Schema $json;
 
 	public function __construct(Generator $generator)
 	{
@@ -31,6 +29,7 @@ class ReferenceProcessor
 	{
 		$required = [];
 		$parent = $type->getParentClass();
+
 		//inheritance
 		if (($parent !== null) && (!in_array($parent->getShortName(), $this->generator->getConfig()->skipClasses, true))) {
 			if (!isset($this->json->components->schemas[$parent->getShortName()])) {
@@ -43,6 +42,7 @@ class ReferenceProcessor
 
 		$properties = $type->getProperties();
 		$jsonProperties = [];
+
 		foreach ($properties as $property) {
 			if (!$property->isPublic() || (isset($parent) && $parent->hasProperty($property->getName()))) {
 				continue;
@@ -67,6 +67,7 @@ class ReferenceProcessor
 		}
 
 		$this->json->components->schemas[$type->shortName]['properties'] = $jsonProperties;
+
 		if (count($required) > 0) {
 			$this->json->components->schemas[$type->shortName]['required'] = $required;
 		}
@@ -105,6 +106,7 @@ class ReferenceProcessor
 	{
 		$constants = $propertyClass->getConstants();
 		$description = '';
+
 		foreach ($constants as $key => $value) {
 			$description .= $key . ' => ' . $value . "\n";
 		}
@@ -112,6 +114,38 @@ class ReferenceProcessor
 		$jsonProperty->type = 'string';
 		$jsonProperty->enum = array_values($constants);
 		$jsonProperty->description = $description;
+
+		return $jsonProperty;
+	}
+
+	protected function extractObjectProperty(string $propertyType, ArrayHash $jsonProperty, int $arrayDimensions = 0): ArrayHash
+	{
+		if ($propertyType === $this->generator->getConfig()->dateTimeClass) {
+			$jsonProperty->type = 'string';
+			$jsonProperty->format = 'date-time';
+
+			return $jsonProperty;
+		}
+
+		$propertyClass = ClassType::from($propertyType);
+
+		if ($propertyClass->is($this->generator->getConfig()->baseEnum)) {
+			return $this->getEnumProperty($jsonProperty, $propertyClass);
+		}
+
+		$this->generateRef($propertyClass);
+
+		if ($arrayDimensions > 0) {
+			$jsonProperty->type = 'array';
+			$endItem = ['$ref' => '#/components/schemas/' . $propertyClass->shortName];
+			$jsonProperty->items = $arrayDimensions === 2 ? [
+					'type' => 'array',
+					'items' => $endItem,
+				] : $endItem;
+		} else {
+			$jsonProperty = ArrayHash::from(['$ref' => '#/components/schemas/' . $propertyClass->shortName]);
+		}
+
 		return $jsonProperty;
 	}
 
@@ -123,17 +157,20 @@ class ReferenceProcessor
 
 		$seeAnnotation = $property->getAnnotation('see');
 		$filename = $type->getFileName();
+
 		if ($filename === false) {
 			throw new Exception('Cannot get filename of ' . $type->getName());
 		}
 
 		$useStatements = Helper::getUseStatements($filename);
+
 		if (!isset($useStatements[$seeAnnotation])) {
 			return null;
 		}
 
 		$seeType = $useStatements[$seeAnnotation];
 		$seeClass = ClassType::from($seeType);
+
 		if (!$seeClass->is($this->generator->getConfig()->baseEnum)) {
 			return null;
 		}
@@ -146,6 +183,7 @@ class ReferenceProcessor
 		if ($arrayDimensions > 0) {
 			$jsonProperty->type = 'array';
 			$jsonProperty->items = ['type' => Helper::convertType($propertyType)];
+
 			return;
 		}
 
@@ -182,16 +220,19 @@ class ReferenceProcessor
 		}
 
 		$arrayDimensions = 0;
+
 		for (; Strings::endsWith($propertyType, '[]'); $arrayDimensions++) {
 			$propertyType = substr($propertyType, 0, strlen($propertyType) - 2);
 		}
 
 		$filename = $type->getFileName();
+
 		if ($filename === false) {
 			throw new Exception('Cannot determine filename of ' . $type->getName());
 		}
 
 		$useStatements = Helper::getUseStatements($filename);
+
 		if (isset($useStatements[$propertyType])) {
 			$propertyType = $useStatements[$propertyType];
 		}
@@ -203,39 +244,11 @@ class ReferenceProcessor
 		return [$propertyType, $arrayDimensions];
 	}
 
-	protected function extractObjectProperty(string $propertyType, ArrayHash $jsonProperty, int $arrayDimensions = 0): ArrayHash
-	{
-		if ($propertyType === $this->generator->getConfig()->dateTimeClass) {
-			$jsonProperty->type = 'string';
-			$jsonProperty->format = 'date-time';
-			return $jsonProperty;
-		}
-
-		$propertyClass = ClassType::from($propertyType);
-		if ($propertyClass->is($this->generator->getConfig()->baseEnum)) {
-			return $this->getEnumProperty($jsonProperty, $propertyClass);
-		}
-
-		$this->generateRef($propertyClass);
-
-		if ($arrayDimensions > 0) {
-			$jsonProperty->type = 'array';
-			$endItem = ['$ref' => '#/components/schemas/' . $propertyClass->shortName];
-			$jsonProperty->items = $arrayDimensions === 2 ? [
-					'type' => 'array',
-					'items' => $endItem,
-				] : $endItem;
-		} else {
-			$jsonProperty = ArrayHash::from(['$ref' => '#/components/schemas/' . $propertyClass->shortName]);
-		}
-
-		return $jsonProperty;
-	}
-
 	private function getEnumDescription(ClassType $seeClass): string
 	{
 		$constants = $seeClass->getReflectionConstants();
 		$info = "Possible values: \n";
+
 		foreach ($constants as $const) {
 			$annotations = AnnotationsParser::getAll($const);
 			$desc = !isset($annotations['description']) ? strtolower(str_replace('_', ' ', $const->name)) : implode("\n", $annotations['description']);

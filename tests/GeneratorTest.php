@@ -32,6 +32,7 @@ class GeneratorTest extends TestCase
 	{
 		if (PHP_VERSION_ID < 70400) {
 			$this->assertTrue(true);
+
 			return;
 		}
 
@@ -53,6 +54,7 @@ class GeneratorTest extends TestCase
 	{
 		if (PHP_VERSION_ID < 70400) {
 			$this->assertTrue(true);
+
 			return;
 		}
 
