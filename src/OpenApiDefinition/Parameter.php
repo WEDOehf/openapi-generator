@@ -2,9 +2,6 @@
 
 namespace Wedo\OpenApiGenerator\OpenApiDefinition;
 
-/**
- * @property mixed $schema;
- */
 class Parameter
 {
 
@@ -15,5 +12,7 @@ class Parameter
 	public string $description;
 
 	public bool $required;
+
+	public mixed $schema;
 
 }

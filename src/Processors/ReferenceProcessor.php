@@ -229,7 +229,7 @@ class ReferenceProcessor
 
 		$arrayDimensions = 0;
 
-		for (; Strings::endsWith($propertyType, '[]'); $arrayDimensions++) {
+		for (; str_ends_with($propertyType, '[]'); $arrayDimensions++) {
 			$propertyType = substr($propertyType, 0, strlen($propertyType) - 2);
 		}
 

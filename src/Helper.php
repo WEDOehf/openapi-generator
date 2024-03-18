@@ -39,11 +39,11 @@ class Helper
 		foreach ($lines as $line) {
 			$line = trim($line);
 
-			if (Strings::startsWith(strtolower($line), 'class')) {
+			if (str_starts_with(strtolower($line), 'class')) {
 				return $useStatements;
 			}
 
-			if (!Strings::startsWith(strtolower($line), 'use')) {
+			if (!str_starts_with(strtolower($line), 'use')) {
 				continue;
 			}
 

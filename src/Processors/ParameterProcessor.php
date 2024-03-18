@@ -50,12 +50,8 @@ class ParameterProcessor
 			array_unshift($annotations['param'], $type->getName() . ' $' . $methodParam->getName());
 		}
 
-		if (!isset($annotations['param'])) {
-			return;
-		}
-
 		foreach ($annotations['param'] as $param) {
-			if (count($methodParams) > 0 && $methodParams[0]->getClass() !== null && is_a($methodParams[0]->getClass()->getName(), $this->config->baseRequest, true)) {
+			if (count($methodParams) > 0 && $methodParams[0]->getType() !== null && is_a($methodParams[0]->getType()->getName(), $this->config->baseRequest, true)) {
 				$param = $this->generateParameter($param, $methodParams, $requestMethod);
 				$path->requestBody = [
 					'content' => [
@@ -134,7 +130,7 @@ class ParameterProcessor
 			if ($requestMethod === 'get') {
 				$jsonParam->in = 'path';
 			} else {
-				$pClass = $methodParam->getClass();
+				$pClass = new \ReflectionClass($methodParam->getType()->getName());
 				$this->referenceProcessor->generateRef($pClass);
 				$jsonParam->schema = ['$ref' => '#/components/schemas/' . $pClass->getShortName()];
 				unset($jsonParam->type);
