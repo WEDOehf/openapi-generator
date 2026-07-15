@@ -7,6 +7,7 @@ use Nette\Utils\ArrayHash;
 use Nette\Utils\Strings;
 use ReflectionClass;
 use ReflectionProperty;
+use stdClass;
 use Wedo\OpenApiGenerator\AnnotationParser;
 use Wedo\OpenApiGenerator\Generator;
 use Wedo\OpenApiGenerator\Helper;
@@ -68,7 +69,7 @@ class ReferenceProcessor
 			$jsonProperties[$property->getName()] = $this->getJsonProperty($type, $property);
 		}
 
-		$this->json->components->schemas[$type->getShortName()]['properties'] = $jsonProperties;
+		$this->json->components->schemas[$type->getShortName()]['properties'] = count($jsonProperties) > 0 ? $jsonProperties : new stdClass();
 
 		if (count($required) > 0) {
 			$this->json->components->schemas[$type->getShortName()]['required'] = $required;
