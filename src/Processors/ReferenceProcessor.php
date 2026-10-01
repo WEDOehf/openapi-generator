@@ -7,6 +7,7 @@ use Nette\Utils\ArrayHash;
 use Nette\Utils\Strings;
 use ReflectionClass;
 use ReflectionProperty;
+use ReflectionUnionType;
 use stdClass;
 use Wedo\OpenApiGenerator\AnnotationParser;
 use Wedo\OpenApiGenerator\Generator;
@@ -79,6 +80,18 @@ class ReferenceProcessor
 	protected function getJsonProperty(ReflectionClass $type, ReflectionProperty $property): ArrayHash
 	{
 		$jsonProperty = new ArrayHash();
+		$nativeType = $property->getType();
+
+		if ($nativeType instanceof ReflectionUnionType) {
+			return $this->getGenericJsonProperty($type, $property, (string) $nativeType);
+		}
+
+		$varType = $this->getVarTypeExpression($property);
+
+		if ($varType !== null && (str_contains($varType, '<') || str_contains($varType, '|'))) {
+			return $this->getGenericJsonProperty($type, $property, $varType);
+		}
+
 		[$propertyType, $arrayDimensions] = $this->getPropertyType($type, $property, $jsonProperty);
 
 		if (isset($this->generator->getConfig()->typeReplacement[$propertyType])) {
@@ -189,7 +202,7 @@ class ReferenceProcessor
 	{
 		if ($arrayDimensions > 0) {
 			$jsonProperty->type = 'array';
-			$jsonProperty->items = ['type' => Helper::convertType($propertyType)];
+			$jsonProperty->items = $propertyType === 'mixed' ? new stdClass() : ['type' => Helper::convertType($propertyType)];
 
 			return;
 		}
@@ -219,7 +232,7 @@ class ReferenceProcessor
 				throw new Exception('Missing var annotation for array on ' . $type->getName() . '::$' . $property->getName());
 			}
 
-			$propertyType = explode(' ', $propertyAnnotations['var'][0])[0];
+			$propertyType = (string) $this->getVarTypeExpression($property);
 		}
 
 		$enumDescription = $this->getSeeEnumInfo($type, $property);
@@ -234,10 +247,46 @@ class ReferenceProcessor
 			$propertyType = substr($propertyType, 0, strlen($propertyType) - 2);
 		}
 
-		$filename = $type->getFileName();
+		return [$this->resolveClassName($propertyType, $type), $arrayDimensions];
+	}
+
+	/**
+	 * The type part of the `@var` annotation: everything up to the first whitespace outside `<...>`,
+	 * so a description after `array<string, mixed>` does not cut the expression at its comma.
+	 */
+	private function getVarTypeExpression(ReflectionProperty $property): ?string
+	{
+		$annotations = AnnotationParser::getAll($property);
+
+		if (!isset($annotations['var'])) {
+			return null;
+		}
+
+		$raw = Strings::trim((string) $annotations['var'][0]);
+		$depth = 0;
+		$length = strlen($raw);
+
+		for ($i = 0; $i < $length; $i++) {
+			$char = $raw[$i];
+
+			if ($char === '<') {
+				$depth++;
+			} elseif ($char === '>') {
+				$depth--;
+			} elseif ($depth === 0 && ctype_space($char)) {
+				return substr($raw, 0, $i);
+			}
+		}
+
+		return $raw === '' ? null : $raw;
+	}
+
+	private function resolveClassName(string $propertyType, ReflectionClass $context): string
+	{
+		$filename = $context->getFileName();
 
 		if ($filename === false) {
-			throw new Exception('Cannot determine filename of ' . $type->getName());
+			throw new Exception('Cannot determine filename of ' . $context->getName());
 		}
 
 		$useStatements = Helper::getUseStatements($filename);
@@ -246,11 +295,169 @@ class ReferenceProcessor
 			$propertyType = $useStatements[$propertyType];
 		}
 
-		if (class_exists($type->getNamespaceName() . '\\' . $propertyType)) {
-			$propertyType = $type->getNamespaceName() . '\\' . $propertyType;
+		if (class_exists($context->getNamespaceName() . '\\' . $propertyType)) {
+			$propertyType = $context->getNamespaceName() . '\\' . $propertyType;
 		}
 
-		return [$propertyType, $arrayDimensions];
+		return $propertyType;
+	}
+
+	/**
+	 * A property whose type uses generics or a union: `array<string, mixed>`, `list<Item>`,
+	 * `array<int, array<string, int>>`, `Item[]|null`, native `int|string`. Built recursively from the
+	 * leaf types, so a map becomes an object with `additionalProperties`, a list an array with `items`,
+	 * and `mixed` an unconstrained schema instead of the literal text being emitted as the type.
+	 */
+	private function getGenericJsonProperty(ReflectionClass $type, ReflectionProperty $property, string $expression): ArrayHash
+	{
+		$schema = $this->schemaForTypeExpression($expression, $type);
+		$jsonProperty = ArrayHash::from($schema instanceof stdClass ? [] : $schema, false);
+
+		$propertyAnnotations = AnnotationParser::getAll($property);
+
+		if (
+			isset($propertyAnnotations['description'])
+			&& Strings::trim($propertyAnnotations['description'][0]) !== ''
+		) {
+			$jsonProperty->description = implode("\n", $propertyAnnotations['description']);
+		}
+
+		return $jsonProperty;
+	}
+
+	/**
+	 * @return mixed[]|stdClass an OpenAPI schema fragment; an empty stdClass means "any type"
+	 */
+	private function schemaForTypeExpression(string $expression, ReflectionClass $context): array|stdClass
+	{
+		$expression = trim($expression);
+		$nullable = str_starts_with($expression, '?');
+		$members = [];
+
+		foreach ($this->splitTopLevel(ltrim($expression, '?'), '|') as $member) {
+			if (strtolower($member) === 'null') {
+				$nullable = true;
+			} else {
+				$members[] = $member;
+			}
+		}
+
+		if (count($members) > 1) {
+			sort($members);
+			$schema = ['oneOf' => array_map(fn (string $member): array|stdClass => $this->schemaForTypeExpression($member, $context), $members)];
+		} else {
+			$schema = $this->schemaForSingleType($members[0] ?? 'mixed', $context);
+		}
+
+		if ($nullable && !$schema instanceof stdClass) {
+			$schema['nullable'] = true;
+		}
+
+		return $schema;
+	}
+
+	/**
+	 * @return mixed[]|stdClass
+	 */
+	private function schemaForSingleType(string $expression, ReflectionClass $context): array|stdClass
+	{
+		if (str_ends_with($expression, '[]')) {
+			return ['type' => 'array', 'items' => $this->schemaForTypeExpression(substr($expression, 0, -2), $context)];
+		}
+
+		$generic = Strings::match($expression, '~^([a-zA-Z0-9_\\-]+)<(.*)>$~s');
+
+		if ($generic !== null) {
+			return $this->schemaForGeneric(strtolower($generic[1]), $this->splitTopLevel($generic[2], ','), $context);
+		}
+
+		$builtIn = $this->schemaForBuiltIn($expression);
+
+		if ($builtIn !== null) {
+			return $builtIn;
+		}
+
+		$className = $this->resolveClassName($expression, $context);
+
+		if (isset($this->generator->getConfig()->typeReplacement[$className])) {
+			$className = $this->generator->getConfig()->typeReplacement[$className];
+		}
+
+		if (class_exists($className)) {
+			return (array) $this->extractObjectProperty($className, new ArrayHash());
+		}
+
+		return ['type' => Helper::convertType($expression)];
+	}
+
+	/**
+	 * `list<V>`, `array<V>`, `array<int, V>` are arrays; `array<string, V>` (any non-int key) is a map.
+	 *
+	 * @param string[] $arguments
+	 * @return mixed[]
+	 */
+	private function schemaForGeneric(string $container, array $arguments, ReflectionClass $context): array
+	{
+		if (count($arguments) === 1) {
+			return ['type' => 'array', 'items' => $this->schemaForTypeExpression($arguments[0], $context)];
+		}
+
+		$key = strtolower(trim($arguments[0]));
+		$value = $this->schemaForTypeExpression($arguments[1], $context);
+		$isList = in_array($container, ['list', 'non-empty-list'], true)
+			|| in_array($key, ['int', 'integer', 'positive-int', 'non-negative-int'], true);
+
+		return $isList ? ['type' => 'array', 'items' => $value] : ['type' => 'object', 'additionalProperties' => $value];
+	}
+
+	/**
+	 * @return mixed[]|stdClass|null null when the expression is not a built-in type
+	 */
+	private function schemaForBuiltIn(string $expression): array|stdClass|null
+	{
+		return match (strtolower($expression)) {
+			'mixed' => new stdClass(),
+			'array', 'iterable', 'list' => ['type' => 'array', 'items' => new stdClass()],
+			'object' => ['type' => 'object'],
+			'bool', 'boolean', 'int', 'integer', 'float', 'double', 'number', 'string' => ['type' => Helper::convertType(strtolower($expression))],
+			default => null,
+		};
+	}
+
+	/**
+	 * Splits on a separator that is not nested inside `<...>`.
+	 *
+	 * @return string[]
+	 */
+	private function splitTopLevel(string $expression, string $separator): array
+	{
+		$parts = [];
+		$depth = 0;
+		$current = '';
+		$length = strlen($expression);
+
+		for ($i = 0; $i < $length; $i++) {
+			$char = $expression[$i];
+
+			if ($char === '<') {
+				$depth++;
+			} elseif ($char === '>') {
+				$depth--;
+			}
+
+			if ($char === $separator && $depth === 0) {
+				$parts[] = trim($current);
+				$current = '';
+
+				continue;
+			}
+
+			$current .= $char;
+		}
+
+		$parts[] = trim($current);
+
+		return $parts;
 	}
 
 	private function getEnumDescription(ReflectionClass $seeClass): string

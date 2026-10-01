@@ -4,6 +4,7 @@ namespace Wedo\OpenApiGenerator\Tests\TestApi\Controllers;
 
 use DateTime;
 use Wedo\OpenApiGenerator\Tests\TestApi\Entities\ProductListItem;
+use Wedo\OpenApiGenerator\Tests\TestApi\Responses\GenericsResponse;
 use Wedo\OpenApiGenerator\Tests\TestApi\Responses\ProductListResponse;
 use Wedo\OpenApiGenerator\Tests\TestApi\Responses\ProductResponse;
 
@@ -36,6 +37,21 @@ class ProductController extends BaseController
 		$product->id = 5;
 		$product->name = 'blabla';
 		$response->data = [$product];
+
+		return $response;
+	}
+
+	public function getGenerics(): GenericsResponse
+	{
+		$response = new GenericsResponse();
+		$response->meta = ['any' => 1];
+		$response->items = [];
+		$response->tags = ['a'];
+		$response->counts = ['x' => ['y' => 1]];
+		$response->by_key = [];
+		$response->anything = [];
+		$response->nullable_map = null;
+		$response->id_or_slug = 1;
 
 		return $response;
 	}
