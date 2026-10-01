@@ -88,7 +88,7 @@ class ReferenceProcessor
 
 		$varType = $this->getVarTypeExpression($property);
 
-		if ($varType !== null && (str_contains($varType, '<') || str_contains($varType, '|'))) {
+		if ($varType !== null && (str_contains($varType, '<') || str_contains($varType, '{') || str_contains($varType, '|'))) {
 			return $this->getGenericJsonProperty($type, $property, $varType);
 		}
 
@@ -251,7 +251,7 @@ class ReferenceProcessor
 	}
 
 	/**
-	 * The type part of the `@var` annotation: everything up to the first whitespace outside `<...>`,
+	 * The type part of the `@var` annotation: everything up to the first whitespace outside `<...>`/`{...}`,
 	 * so a description after `array<string, mixed>` does not cut the expression at its comma.
 	 */
 	private function getVarTypeExpression(ReflectionProperty $property): ?string
@@ -269,9 +269,9 @@ class ReferenceProcessor
 		for ($i = 0; $i < $length; $i++) {
 			$char = $raw[$i];
 
-			if ($char === '<') {
+			if ($char === '<' || $char === '{' || $char === '(') {
 				$depth++;
-			} elseif ($char === '>') {
+			} elseif ($char === '>' || $char === '}' || $char === ')') {
 				$depth--;
 			} elseif ($depth === 0 && ctype_space($char)) {
 				return substr($raw, 0, $i);
@@ -371,6 +371,12 @@ class ReferenceProcessor
 			return $this->schemaForGeneric(strtolower($generic[1]), $this->splitTopLevel($generic[2], ','), $context);
 		}
 
+		$shape = Strings::match($expression, '~^(?:array|object|list)\\{(.*)\\}$~s');
+
+		if ($shape !== null) {
+			return $this->schemaForShape($this->splitTopLevel($shape[1], ','), $context);
+		}
+
 		$builtIn = $this->schemaForBuiltIn($expression);
 
 		if ($builtIn !== null) {
@@ -411,6 +417,39 @@ class ReferenceProcessor
 	}
 
 	/**
+	 * `array{name: string, text?: string}`: an object with named properties; keys without `?` are required.
+	 *
+	 * @param string[] $members
+	 * @return mixed[]
+	 */
+	private function schemaForShape(array $members, ReflectionClass $context): array
+	{
+		$properties = [];
+		$required = [];
+
+		foreach ($members as $member) {
+			$pair = $this->splitTopLevel($member, ':');
+			$name = trim($pair[0]);
+
+			if (str_ends_with($name, '?')) {
+				$name = substr($name, 0, -1);
+			} else {
+				$required[] = $name;
+			}
+
+			$properties[$name] = $this->schemaForTypeExpression($pair[1] ?? 'mixed', $context);
+		}
+
+		$schema = ['type' => 'object', 'properties' => $properties];
+
+		if (count($required) > 0) {
+			$schema['required'] = $required;
+		}
+
+		return $schema;
+	}
+
+	/**
 	 * @return mixed[]|stdClass|null null when the expression is not a built-in type
 	 */
 	private function schemaForBuiltIn(string $expression): array|stdClass|null
@@ -425,7 +464,7 @@ class ReferenceProcessor
 	}
 
 	/**
-	 * Splits on a separator that is not nested inside `<...>`.
+	 * Splits on a separator that is not nested inside `<...>`, `{...}` or `(...)`.
 	 *
 	 * @return string[]
 	 */
@@ -439,9 +478,9 @@ class ReferenceProcessor
 		for ($i = 0; $i < $length; $i++) {
 			$char = $expression[$i];
 
-			if ($char === '<') {
+			if ($char === '<' || $char === '{' || $char === '(') {
 				$depth++;
-			} elseif ($char === '>') {
+			} elseif ($char === '>' || $char === '}' || $char === ')') {
 				$depth--;
 			}
 

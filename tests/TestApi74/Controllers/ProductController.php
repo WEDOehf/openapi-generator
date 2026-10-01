@@ -49,6 +49,7 @@ class ProductController extends BaseController
 		$response->tags = ['a'];
 		$response->counts = ['x' => ['y' => 1]];
 		$response->by_key = [];
+		$response->shaped = [['name' => 'a']];
 		$response->anything = [];
 		$response->nullable_map = null;
 		$response->id_or_slug = 1;

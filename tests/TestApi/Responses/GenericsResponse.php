@@ -22,6 +22,9 @@ class GenericsResponse
 	/** @var array<string, ProductListItem> */
 	public $by_key;
 
+	/** @var array<int, array{name: string, text?: string}> */
+	public $shaped;
+
 	/** @var mixed[] */
 	public $anything;
 

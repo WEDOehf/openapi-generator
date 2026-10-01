@@ -236,6 +236,23 @@
                             "$ref": "#\/components\/schemas\/ProductListItem"
                         }
                     },
+                    "shaped": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "type": "string"
+                                },
+                                "text": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "name"
+                            ]
+                        }
+                    },
                     "anything": {
                         "type": "array",
                         "items": {}
